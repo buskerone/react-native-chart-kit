@@ -1,5 +1,5 @@
 import React from 'react'
-import { View } from 'react-native'
+import { View, Dimensions } from 'react-native'
 import {
   Svg,
   Circle,
@@ -32,7 +32,7 @@ class LineChart extends AbstractChart {
         output.push (
           <Circle
             key={Math.random()}
-            cx={paddingRight + (i * (width - paddingRight) / dataset.data.length)}
+            cx={paddingRight + (i * (width + paddingRight) / dataset.data.length)}
             cy={((height / 4 * 3 * (1 - ((x - Math.min(...datas)) / this.calcScaler(datas)))) + paddingTop)}
             r="4"
             fill={this.getColor(dataset, 0.7)}
@@ -56,10 +56,10 @@ class LineChart extends AbstractChart {
         <Polygon
           key={index}
           points={dataset.data.map((x, i) =>
-            (paddingRight + (i * (width - paddingRight) / dataset.data.length)) +
+            (paddingRight + (i * (width + paddingRight) / dataset.data.length)) +
           ',' +
            (((height / 4 * 3 * (1 - ((x - Math.min(...datas)) / this.calcScaler(datas)))) + paddingTop))
-          ).join(' ') + ` ${paddingRight + ((width - paddingRight) / dataset.data.length * (dataset.data.length - 1))},${(height / 4 * 3) + paddingTop} ${paddingRight},${(height / 4 * 3) + paddingTop}`}
+          ).join(' ') + ` ${paddingRight + ((width + paddingRight) / dataset.data.length * (dataset.data.length - 1))},${(height / 4 * 3) + paddingTop} ${paddingRight},${(height / 4 * 3) + paddingTop}`}
           fill="url(#fillShadowGradient)"
           strokeWidth={0}
         />)
@@ -79,7 +79,7 @@ class LineChart extends AbstractChart {
     data.map((dataset,index) => {
 
       const points = dataset.data.map((x, i) =>
-      (paddingRight + (i * (width - paddingRight) / dataset.data.length)) +
+      (paddingRight + (i * (width + paddingRight) / dataset.data.length)) +
       ',' +
        (((height / 4 * 3 * (1 - ((x - Math.min(...datas)) / this.calcScaler(datas))))) + paddingTop))
 
@@ -109,7 +109,7 @@ class LineChart extends AbstractChart {
     }
 
     const datas = this.getDatas(data)
-    const x = i => Math.floor(paddingRight + i * (width - paddingRight) / dataset.data.length)
+    const x = i => Math.floor(paddingRight + i * (width + paddingRight) / dataset.data.length)
     const y = i => Math.floor(((height / 4 * 3 * (1 - ((dataset.data[i] - Math.min(...datas)) / this.calcScaler(datas)))) + paddingTop))
 
     return [`M${x(0)},${y(0)}`].concat(dataset.data.slice(0, -1).map((_, i) => {
@@ -146,7 +146,7 @@ class LineChart extends AbstractChart {
     let output = [];
     data.map((dataset,index)=>{
       let d = this.getBezierLinePoints(dataset,config) +
-      ` L${paddingRight + ((width - paddingRight) / dataset.data.length * (dataset.data.length - 1))},${(height / 4 * 3) + paddingTop} L${paddingRight},${(height / 4 * 3) + paddingTop} Z`
+      ` L${paddingRight + ((width + paddingRight) / dataset.data.length * (dataset.data.length - 1))},${(height / 4 * 3) + paddingTop} L${paddingRight},${(height / 4 * 3) + paddingTop} Z`
       output.push (
         <Path
           key={index}
@@ -161,8 +161,6 @@ class LineChart extends AbstractChart {
   }
 
   render() {
-    const paddingTop = 16
-    const paddingRight = 64
     const { width, height, data, withShadow = true, withDots = true, withInnerLines = true, withHorizontalLabels = true, withVerticalLabels = true, style = {}, decorator } = this.props
     const { labels = [] } = data
     const { borderRadius = 0 } = style
@@ -171,6 +169,8 @@ class LineChart extends AbstractChart {
       height
     }
     const datas = this.getDatas(data.datasets)
+    const paddingTop = withVerticalLabels ? 16 : 10
+    const paddingRight = withHorizontalLabels ? 64 : 20
     return (
       <View style={style}>
         <Svg
